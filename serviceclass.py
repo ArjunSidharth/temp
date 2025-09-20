@@ -128,4 +128,388 @@ class TranslationService {
       'fr': 'Lieux Spirituels',
       'ta': 'ஆன்மீக இடங்கள்',
       'hi': 'आध्यात्मिक स्थान',
-      'es': '
+      'es': 'Lugares Espirituales',
+      'de': 'Spirituelle Orte',
+    },
+    'adventure_spots': {
+      'en': 'Adventure Spots',
+      'fr': 'Spots d\'Aventure',
+      'ta': 'சாகசிக இடங்கள்',
+      'hi': 'साहसिक स्थान',
+      'es': 'Lugares de Aventura',
+      'de': 'Abenteuer-Spots',
+    },
+    'current_crowd': {
+      'en': 'Current crowd level',
+      'fr': 'Niveau de foule actuel',
+      'ta': 'தற்போதைய கூட்ட அளவு',
+      'hi': 'वर्तमान भीड़ का स्तर',
+      'es': 'Nivel de multitud actual',
+      'de': 'Aktuelle Menschenmenge',
+    },
+    'best_time': {
+      'en': 'Best time to visit',
+      'fr': 'Meilleur moment pour visiter',
+      'ta': 'பார்வையிட சிறந்த நேரம்',
+      'hi': 'यात्रा का सबसे अच्छा समय',
+      'es': 'Mejor momento para visitar',
+      'de': 'Beste Besuchszeit',
+    },
+  };
+
+  static String translate(String key, String languageCode) {
+    return _translations[key]?[languageCode] ?? _translations[key]?['en'] ?? key;
+  }
+
+  static String getLanguageCode(String language) {
+    Map<String, String> languageCodes = {
+      'English': 'en',
+      'French': 'fr',
+      'Tamil': 'ta',
+      'Hindi': 'hi',
+      'Spanish': 'es',
+      'German': 'de',
+    };
+    return languageCodes[language] ?? 'en';
+  }
+}
+
+// services/itinerary_service.dart
+class ItineraryService {
+  static Map<String, dynamic> generateItinerary({
+    required int days,
+    required List<String> interests,
+    required String budget,
+    String? startLocation,
+  }) {
+    Map<String, dynamic> itinerary = {
+      'days': [],
+      'total_estimated_cost': 0,
+      'transportation_tips': [],
+      'weather_considerations': [],
+    };
+
+    for (int day = 1; day <= days; day++) {
+      Map<String, dynamic> dayPlan = {
+        'day': day,
+        'theme': _getDayTheme(day, interests),
+        'activities': _getActivitiesForDay(day, interests),
+        'meals': _getMealRecommendations(),
+        'transportation': _getTransportationForDay(day),
+        'estimated_cost': _calculateDayCost(day, budget),
+        'crowd_predictions': _getCrowdPredictions(day),
+      };
+      itinerary['days'].add(dayPlan);
+    }
+
+    itinerary['total_estimated_cost'] = _calculateTotalCost(days, budget);
+    itinerary['transportation_tips'] = _getTransportationTips();
+    itinerary['weather_considerations'] = _getWeatherConsiderations();
+
+    return itinerary;
+  }
+
+  static String _getDayTheme(int day, List<String> interests) {
+    List<String> themes = [];
+    if (interests.contains('devotional')) themes.add('Spiritual Journey');
+    if (interests.contains('adventure')) themes.add('Adventure & Nature');
+    if (interests.contains('culture')) themes.add('Cultural Exploration');
+    if (interests.contains('food')) themes.add('Culinary Experience');
+    
+    if (themes.isEmpty) themes = ['Cultural Exploration', 'Adventure & Nature', 'Spiritual Journey'];
+    
+    return themes[(day - 1) % themes.length];
+  }
+
+  static List<Map<String, dynamic>> _getActivitiesForDay(int day, List<String> interests) {
+    Map<int, List<Map<String, dynamic>>> dayActivities = {
+      1: [
+        {
+          'time': '08:00',
+          'activity': 'Sri Aurobindo Ashram Visit',
+          'duration': '2 hours',
+          'location': 'White Town',
+          'type': 'devotional',
+        },
+        {
+          'time': '11:00',
+          'activity': 'French Quarter Walking Tour',
+          'duration': '3 hours',
+          'location': 'French Quarter',
+          'type': 'culture',
+        },
+        {
+          'time': '17:00',
+          'activity': 'Promenade Beach Sunset',
+          'duration': '2 hours',
+          'location': 'Promenade Beach',
+          'type': 'relaxation',
+        },
+      ],
+      2: [
+        {
+          'time': '07:00',
+          'activity': 'Paradise Beach Trip',
+          'duration': '4 hours',
+          'location': 'Chunnambar',
+          'type': 'adventure',
+        },
+        {
+          'time': '14:00',
+          'activity': 'Auroville Exploration',
+          'duration': '3 hours',
+          'location': 'Auroville',
+          'type': 'spiritual',
+        },
+        {
+          'time': '19:00',
+          'activity': 'Local Market Visit',
+          'duration': '2 hours',
+          'location': 'Mission Street',
+          'type': 'culture',
+        },
+      ],
+      3: [
+        {
+          'time': '09:00',
+          'activity': 'Scuba Diving Experience',
+          'duration': '3 hours',
+          'location': 'Auroville Beach',
+          'type': 'adventure',
+        },
+        {
+          'time': '15:00',
+          'activity': 'Cathedral Visit',
+          'duration': '1 hour',
+          'location': 'Mission Street',
+          'type': 'devotional',
+        },
+        {
+          'time': '21:00',
+          'activity': 'Le Club Nightlife',
+          'duration': '3 hours',
+          'location': 'Promenade Beach',
+          'type': 'party',
+        },
+      ],
+    };
+
+    return dayActivities[day] ?? dayActivities[1]!;
+  }
+
+  static List<Map<String, dynamic>> _getMealRecommendations() {
+    return [
+      {
+        'meal': 'Breakfast',
+        'recommendation': 'Baker Street Cafe',
+        'cuisine': 'French-Indian Fusion',
+        'price_range': '₹200-400',
+      },
+      {
+        'meal': 'Lunch',
+        'recommendation': 'Surguru Restaurant',
+        'cuisine': 'South Indian',
+        'price_range': '₹150-300',
+      },
+      {
+        'meal': 'Dinner',
+        'recommendation': 'Villa Shanti',
+        'cuisine': 'Continental',
+        'price_range': '₹800-1500',
+      },
+    ];
+  }
+
+  static Map<String, dynamic> _getTransportationForDay(int day) {
+    return {
+      'recommended': 'Bike Rental',
+      'cost': '₹300/day',
+      'alternatives': ['Auto Rickshaw', 'Taxi', 'Walking'],
+      'tips': 'Book bike early morning for best rates',
+    };
+  }
+
+  static int _calculateDayCost(int day, String budget) {
+    Map<String, int> budgetRanges = {
+      'budget': 1500,
+      'moderate': 2500,
+      'luxury': 4000,
+    };
+    return budgetRanges[budget] ?? 2500;
+  }
+
+  static int _calculateTotalCost(int days, String budget) {
+    return _calculateDayCost(1, budget) * days;
+  }
+
+  static List<String> _getTransportationTips() {
+    return [
+      'Rent a bike for maximum flexibility',
+      'Avoid peak hours (8-10 AM, 5-7 PM) for better traffic',
+      'Keep your documents handy',
+      'Wear helmet at all times',
+      'Use GPS navigation for unfamiliar routes',
+    ];
+  }
+
+  static List<String> _getWeatherConsiderations() {
+    return [
+      'Carry sunscreen and hat for daytime activities',
+      'Keep light jacket for evening beach visits',
+      'Monsoon season (June-September): Carry umbrella',
+      'Best visiting months: October to March',
+    ];
+  }
+
+  static Map<String, dynamic> _getCrowdPredictions(int day) {
+    return {
+      'morning': 'Low to Moderate',
+      'afternoon': 'Moderate to High',
+      'evening': 'High (especially beaches)',
+      'night': 'Low to Moderate',
+    };
+  }
+}
+
+// services/recommendation_engine.dart
+class RecommendationEngine {
+  static List<Map<String, dynamic>> getPersonalizedRecommendations({
+    required Map<String, dynamic> userPreferences,
+    required String currentLocation,
+    required String timeOfDay,
+  }) {
+    List<Map<String, dynamic>> recommendations = [];
+    
+    // Sample recommendation logic
+    if (userPreferences['interests']?.contains('adventure') == true) {
+      recommendations.addAll(_getAdventureRecommendations(timeOfDay));
+    }
+    
+    if (userPreferences['interests']?.contains('devotional') == true) {
+      recommendations.addAll(_getDevotionalRecommendations(timeOfDay));
+    }
+    
+    if (userPreferences['budget'] == 'budget') {
+      recommendations = recommendations.where((rec) => 
+        rec['cost_level'] == 'low' || rec['cost_level'] == 'moderate'
+      ).toList();
+    }
+    
+    // Sort by relevance score
+    recommendations.sort((a, b) => 
+      (b['relevance_score'] as double).compareTo(a['relevance_score'] as double)
+    );
+    
+    return recommendations.take(5).toList();
+  }
+
+  static List<Map<String, dynamic>> _getAdventureRecommendations(String timeOfDay) {
+    if (timeOfDay == 'morning') {
+      return [
+        {
+          'name': 'Paradise Beach Adventure',
+          'type': 'adventure',
+          'relevance_score': 0.9,
+          'cost_level': 'moderate',
+          'description': 'Boat ride and water sports',
+        },
+        {
+          'name': 'Cycling Tour',
+          'type': 'adventure',
+          'relevance_score': 0.8,
+          'cost_level': 'low',
+          'description': 'Explore French Quarter on bike',
+        },
+      ];
+    } else if (timeOfDay == 'afternoon') {
+      return [
+        {
+          'name': 'Scuba Diving',
+          'type': 'adventure',
+          'relevance_score': 0.9,
+          'cost_level': 'high',
+          'description': 'Underwater exploration',
+        },
+      ];
+    }
+    return [];
+  }
+
+  static List<Map<String, dynamic>> _getDevotionalRecommendations(String timeOfDay) {
+    if (timeOfDay == 'morning') {
+      return [
+        {
+          'name': 'Sri Aurobindo Ashram',
+          'type': 'devotional',
+          'relevance_score': 0.95,
+          'cost_level': 'low',
+          'description': 'Morning meditation session',
+        },
+        {
+          'name': 'Manakula Vinayagar Temple',
+          'type': 'devotional',
+          'relevance_score': 0.8,
+          'cost_level': 'low',
+          'description': 'Ancient Ganesha temple',
+        },
+      ];
+    }
+    return [];
+  }
+
+  static Map<String, dynamic> optimizeRoute(List<String> destinations) {
+    // Simple route optimization (in production, use Google Maps API)
+    return {
+      'optimized_order': destinations,
+      'total_distance': '15 km',
+      'estimated_time': '2 hours',
+      'fuel_cost': '₹150',
+      'traffic_condition': 'moderate',
+    };
+  }
+}
+
+// models/user_preference.dart
+class UserPreference {
+  final String userId;
+  final List<String> interests;
+  final String budgetLevel;
+  final String preferredLanguage;
+  final Map<String, int> visitHistory;
+  final List<String> favoriteSpots;
+  final DateTime lastUpdated;
+
+  UserPreference({
+    required this.userId,
+    required this.interests,
+    required this.budgetLevel,
+    required this.preferredLanguage,
+    required this.visitHistory,
+    required this.favoriteSpots,
+    required this.lastUpdated,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'userId': userId,
+      'interests': interests,
+      'budgetLevel': budgetLevel,
+      'preferredLanguage': preferredLanguage,
+      'visitHistory': visitHistory,
+      'favoriteSpots': favoriteSpots,
+      'lastUpdated': lastUpdated.toIso8601String(),
+    };
+  }
+
+  static UserPreference fromJson(Map<String, dynamic> json) {
+    return UserPreference(
+      userId: json['userId'],
+      interests: List<String>.from(json['interests'] ?? []),
+      budgetLevel: json['budgetLevel'] ?? 'moderate',
+      preferredLanguage: json['preferredLanguage'] ?? 'English',
+      visitHistory: Map<String, int>.from(json['visitHistory'] ?? {}),
+      favoriteSpots: List<String>.from(json['favoriteSpots'] ?? []),
+      lastUpdated: DateTime.parse(json['lastUpdated'] ?? DateTime.now().toIso8601String()),
+    );
+  }
+}
